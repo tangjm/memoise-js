@@ -1,12 +1,26 @@
 const { expect } = require("chai");
 const memoise = require("../src/index");
 
+const f = () => 10;
 const sum = (a, b) => a + b;
 const fib = (n) => (n <= 1 ? 1 : fib(n - 1) + fib(n - 2));
 const fact = (n) => (n <= 1 ? 1 : fact(n - 1) * n);
 const pow = (a, b) => Math.pow(a, b);
 
 describe("Correctness checks", () => {
+  it("0-arity function", () => {
+    let calls = 0;
+    const memoisedFn = memoise(function () {
+      calls += 1;
+      return f();
+    });
+    expect(memoisedFn()).to.equal(10);
+    expect(memoisedFn()).to.equal(10);
+
+    expect(calls).to.equal(1);
+  });
+
+
   it("sum", () => {
     let calls = 0;
     const memoisedFn = memoise(function (a, b) {

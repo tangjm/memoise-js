@@ -5,10 +5,11 @@ const debug = require("debug")("memoise");
  * @param {Function} fn
  */
 function memoise(fn) {
-  const table = {};
+  let table = {};
   return function (...args) {
     let cached = true;
     let res = table;
+
     for (const arg of args) {
       res = res[arg];
       if (res === undefined) {
@@ -16,6 +17,11 @@ function memoise(fn) {
         break;
       }
     }
+
+    if (args.length === 0) {
+      cached = !(typeof table === "object" && Object.keys(table).length === 0);
+    }
+
     if (!cached) {
       res = fn(...args);
       let t = table;
@@ -26,8 +32,13 @@ function memoise(fn) {
         }
         t = t[args[i]];
       }
-      t[args[args.length - 1]] = res;
+      if (args.length === 0) {
+        table = res; 
+      } else {
+        t[args[args.length - 1]] = res;
+      }
     }
+
     debug("cache %O", table);
     return res;
   };
